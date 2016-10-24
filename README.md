@@ -4,7 +4,7 @@ A Django field for use with [python-enumeration](https://github.com/2degrees/pyt
 
 ## Getting started
 
-python-enumeration can be installed from PyPi via:
+django-enum-field can be installed from PyPi via:
 
 ```bash
 pip install django-enum-field
