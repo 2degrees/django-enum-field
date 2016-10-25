@@ -8,7 +8,7 @@ from enumeration import EnumItem as PythonEnumItem
 class EnumField(CharField):
     def __init__(self, enum, *args, **kwargs):
         longest_enum_value = max(len(enum_value) for enum_value in enum)
-        self._enum = enum
+        self.enum = enum
 
         if enum.has_ui_labels:
             assert 'choices' not in kwargs, \
@@ -25,34 +25,14 @@ class EnumField(CharField):
 
     def deconstruct(self):
         name, path, args, kwargs = super(EnumField, self).deconstruct()
-        args.insert(0, self._enum)
-        if self._enum.has_ui_labels:
+        args.insert(0, self.enum)
+        if self.enum.has_ui_labels:
             del kwargs['choices']
         del kwargs['max_length']
         return name, path, args, kwargs
 
     def to_python(self, value):
-        if isinstance(value, EnumItem):
-            enum_values = list(self.enum_items_by_values.keys())
-            if list(value.enum_values) != enum_values:
-                raise EnumFieldValidationError(
-                    'Enum item {!r} does not belong to this enum'.format(value),
-                    code='does_not_belong',
-                )
-
-            enum_item = value
-
-        elif value is None:
-            enum_item = value
-
-        else:
-            if value not in self.enum_items_by_values:
-                raise EnumFieldValidationError(
-                    '{!r} must be a value in the enum'.format(value),
-                    code='cannot_resolve_item',
-                )
-            enum_item = self.enum_items_by_values[value]
-
+        enum_item = coerce_value_to_enum_item(self.enum, value)
         return enum_item
 
     def from_db_value(self, value, expression, connection, context):
@@ -77,3 +57,30 @@ class Enum(PythonEnum):
 
 class EnumFieldValidationError(ValidationError):
     pass
+
+
+def coerce_value_to_enum_item(enum, value):
+    enum_items_by_values = enum.get_items_by_values()
+
+    if isinstance(value, EnumItem):
+        enum_values = list(enum_items_by_values.keys())
+        if list(value.enum_values) != enum_values:
+            raise EnumFieldValidationError(
+                'Enum item {!r} does not belong to this enum'.format(value),
+                code='does_not_belong',
+            )
+
+        enum_item = value
+
+    elif value is None:
+        enum_item = value
+
+    else:
+        if value not in enum_items_by_values:
+            raise EnumFieldValidationError(
+                '{!r} must be a value in the enum'.format(value),
+                code='cannot_resolve_item',
+            )
+        enum_item = enum_items_by_values[value]
+
+    return enum_item

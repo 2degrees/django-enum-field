@@ -2,7 +2,7 @@ from setuptools import setup
 
 
 setup(
-    version='0.1',
+    version='0.2',
     name='django-enum-field',
     install_requires=[
         'python-enumeration',
