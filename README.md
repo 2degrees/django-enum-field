@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/2degrees/django-enum-field.svg?branch=master)](https://travis-ci.org/2degrees/django-enum-field) 
+[![Coverage Status](https://coveralls.io/repos/github/2degrees/django-enum-field/badge.svg?branch=master)](https://coveralls.io/github/2degrees/django-enum-field?branch=master)
+
 # django-enum-field
 
 A Django field for use with [python-enumeration](https://github.com/2degrees/python-enumeration).
