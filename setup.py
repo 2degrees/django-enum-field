@@ -9,4 +9,5 @@ setup(
         'Django >= 1.8',
     ],
     py_modules=['enum_field'],
+    test_suite="nose.collector",
 )

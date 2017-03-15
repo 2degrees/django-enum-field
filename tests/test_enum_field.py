@@ -26,7 +26,8 @@ class TestEnumDjangoSpecifics(object):
         enum_item_deconstructed = enum_item.deconstruct()
         class_name, args, kwargs = enum_item_deconstructed
         eq_('enum_field.EnumItem', class_name)
-        eq_((enum_item.item_value, zip(*self.enum_args)[0]), args)
+        enum_item_values = list(zip(*self.enum_args))[0]
+        eq_((enum_item.item_value, enum_item_values), args)
         eq_({}, kwargs)
 
 
