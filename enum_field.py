@@ -11,14 +11,15 @@ class EnumField(CharField):
         self.enum = enum
 
         if enum.has_ui_labels:
-            assert 'choices' not in kwargs, \
-                'The enum has UI labels set which precludes specifying choices'
             choices = enum.get_ui_labels()
         else:
-            choices = kwargs.pop('choices', [])
+            choices = list(zip(enum, enum))
 
         super(EnumField, self).__init__(
-            max_length=longest_enum_value, choices=choices, *args, **kwargs
+            max_length=longest_enum_value,
+            choices=choices,
+            *args,
+            **kwargs
         )
 
         self.enum_items_by_values = enum.get_items_by_values()
@@ -26,8 +27,7 @@ class EnumField(CharField):
     def deconstruct(self):
         name, path, args, kwargs = super(EnumField, self).deconstruct()
         args.insert(0, self.enum)
-        if self.enum.has_ui_labels:
-            del kwargs['choices']
+        del kwargs['choices']
         del kwargs['max_length']
         return name, path, args, kwargs
 

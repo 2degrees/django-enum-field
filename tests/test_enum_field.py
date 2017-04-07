@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from enum_field import Enum, EnumItem, EnumField, EnumFieldValidationError
 from nose.tools import assert_raises
 from nose.tools import eq_
 from nose.tools import ok_
+
+from enum_field import Enum, EnumItem, EnumField, EnumFieldValidationError
 
 
 class TestEnumDjangoSpecifics(object):
@@ -111,68 +112,34 @@ class TestEnumField(object):
         enum_value = self.enum_field.from_db_value(None, None, None, None)
         eq_(None, enum_value)
 
-    def test_choices_for_ui_labels(self):
-        """
-        When the UI labels are set for the Enum, the "choices" attribute is
-        automatically set from the Enum.
-        """
+    def test_enum_with_ui_labels(self):
         self.CLOTHES_SIZE_ENUM.set_ui_labels(self.items_ui_labels)
 
         enum_field = EnumField(self.CLOTHES_SIZE_ENUM)
 
         eq_(enum_field.choices, self.CLOTHES_SIZE_ENUM.get_ui_labels())
 
-    def test_choices_for_ui_labels_with_choices(self):
-        """
-        If choices is specified when UI labels have already been set an
-        AssertionError is raised.
-        """
+    def test_enum_without_ui_labels(self):
+        expected_choices = [(v, v) for v in self.CLOTHES_SIZE_ENUM]
+        eq_(expected_choices, self.enum_field.choices)
 
-        self.CLOTHES_SIZE_ENUM.set_ui_labels(self.items_ui_labels)
-
-        with assert_raises(AssertionError):
+    def test_custom_choices(self):
+        with assert_raises(TypeError):
             EnumField(
                 self.CLOTHES_SIZE_ENUM,
                 choices=(('a', 'Apple'), ('b', 'Ball')),
             )
 
-    def test_choices_for_unset_ui_labels_no_choices(self):
-        """
-        When no UI labels have been set and no "choices" argument is passed,
-        the "choices" attribute is not set.
-        """
-
-        eq_(self.enum_field.choices, [])
-
-    def test_choices_for_unset_ui_labels_with_choices(self):
-        """
-        When no UI labels have been set but a "choices" argument is passed,
-        the "choices" attribute is set to the choices passed in.
-        """
-
-        choices = (('a', 'Apple'), ('b', 'Ball'))
-        enum_field = EnumField(self.CLOTHES_SIZE_ENUM, choices=choices)
-
-        eq_(enum_field.choices, choices)
-
-    def test_deconstruction_with_no_ui_labels(self):
-        self._check_enum_field_deconstruction(self.enum_field)
-
-    def test_deconstruction_with_ui_labels(self):
-        self.CLOTHES_SIZE_ENUM.set_ui_labels(self.items_ui_labels)
-        enum_field = EnumField(self.CLOTHES_SIZE_ENUM)
-        self._check_enum_field_deconstruction(enum_field)
-
-    def _check_enum_field_deconstruction(self, enum_field):
-        field_deconstructed = enum_field.deconstruct()
+    def test_deconstruction(self):
+        field_deconstructed = self.enum_field.deconstruct()
         _, class_name, args, kwargs = field_deconstructed
+
         eq_('enum_field.EnumField', class_name)
         eq_(1, len(args))
-        eq_(self.CLOTHES_SIZE_ENUM, args[0])
-        eq_({}, kwargs)
+        eq_(self.enum_field.enum, args[0])
+        eq_(0, len(kwargs))
 
 
-from enum_field import Enum, EnumField
 CLOTHING_SIZES = Enum(
     ('xs', 'EXTRA_SMALL'),
     ('s', 'SMALL'),
