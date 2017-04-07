@@ -120,7 +120,8 @@ class TestEnumField(object):
         eq_(enum_field.choices, self.CLOTHES_SIZE_ENUM.get_ui_labels())
 
     def test_enum_without_ui_labels(self):
-        expected_choices = [(v, v) for v in self.CLOTHES_SIZE_ENUM]
+        enum_items_by_values = self.CLOTHES_SIZE_ENUM.get_items_by_values()
+        expected_choices = [(i, v) for v, i in enum_items_by_values.items()]
         eq_(expected_choices, self.enum_field.choices)
 
     def test_custom_choices(self):
