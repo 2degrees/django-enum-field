@@ -75,7 +75,7 @@ use the sub-classes available from `enum_field.Enum` and
 
 # Changelog
 
-## Version 1.0 Beta 1 (unreleased)
+## Version 1.0 Beta 1 (2017-04-11)
 
 - Fell back to using the enum values in the field `choices` if the UI labels
   are not set.
