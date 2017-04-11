@@ -71,3 +71,12 @@ Django's migration system. **Please note**, to make the underlying `Enum`
 and `EnumItem` compatible with Django's migration system, you _must_
 use the sub-classes available from `enum_field.Enum` and 
 `enum_field.EnumItem` and *not* from the `python-enumeration` project.
+
+
+# Changelog
+
+## Version 1.0 Beta 1 (unreleased)
+
+- Fell back to using the enum values in the field `choices` if the UI labels
+  are not set.
+- **Backwardly incompatible:** Dropped ability to set custom field choices.

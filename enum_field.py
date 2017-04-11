@@ -7,27 +7,26 @@ from enumeration import EnumItem as PythonEnumItem
 
 class EnumField(CharField):
     def __init__(self, enum, *args, **kwargs):
-        longest_enum_value = max(len(enum_value) for enum_value in enum)
         self.enum = enum
+        self.enum_items_by_values = enum.get_items_by_values()
 
         if enum.has_ui_labels:
-            assert 'choices' not in kwargs, \
-                'The enum has UI labels set which precludes specifying choices'
             choices = enum.get_ui_labels()
         else:
-            choices = kwargs.pop('choices', [])
+            choices = [(i, v) for v, i in self.enum_items_by_values.items()]
 
+        longest_enum_value = max(len(enum_value) for enum_value in enum)
         super(EnumField, self).__init__(
-            max_length=longest_enum_value, choices=choices, *args, **kwargs
+            max_length=longest_enum_value,
+            choices=choices,
+            *args,
+            **kwargs
         )
-
-        self.enum_items_by_values = enum.get_items_by_values()
 
     def deconstruct(self):
         name, path, args, kwargs = super(EnumField, self).deconstruct()
         args.insert(0, self.enum)
-        if self.enum.has_ui_labels:
-            del kwargs['choices']
+        del kwargs['choices']
         del kwargs['max_length']
         return name, path, args, kwargs
 
